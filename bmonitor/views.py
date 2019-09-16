@@ -63,7 +63,7 @@ class ClientViewOne(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ClientSerializer
 
     def get_queryset(self):
-        return Client.objects, all()
+        return Client.objects.all()
 
 
 class ClientViewAll(mixins.CreateModelMixin, generics.ListAPIView):
@@ -104,6 +104,9 @@ class BrandViewAll(mixins.CreateModelMixin, generics.ListAPIView):
             brandAgency = BrandAgency.objects.filter(agency=paramAgency)
             query = query.filter(
                 Q(client=paramClient, id__in=brandAgency.values_list('brand', flat=True))).distinct()
+        elif paramClient is not None:
+            query = query.filter(
+                Q(client=paramClient)).distinct()
         return query
 
 
@@ -177,7 +180,8 @@ class ImageViewAll(mixins.CreateModelMixin, generics.ListAPIView):
             board = BillBoard.objects.filter(id__in=boardBrand.values_list(
                 'billboard', flat=True), owner=paramSupplier)
             query = query.filter(
-                Q(dateCreated__gte=paramStartDate, dateCreated__lte=paramEndDate, board__in=board.values_list('id', flat=True)))
+                dateCreated__gte=paramStartDate, dateCreated__lte=paramEndDate, board__in=board.values_list('id', flat=True))
+            print(query)
         return query
 
 
@@ -246,10 +250,9 @@ class UserViewAll(mixins.CreateModelMixin, generics.ListAPIView):
 
     def get_queryset(self):
         query = Users.objects.all()
-        paramUsername = self.request.GET.get('username')
-        paramPwd = self.request.GET.get('password')
-        if paramUsername is not None and paramPwd is not None:
-            query = query.filter(Q(username=paramUsername, password=paramPwd))
+        authUserId = self.request.GET.get('id')
+        if authUserId is not None:
+            query = query.filter(Q(auth_user=authUserId))
         return query
 
 

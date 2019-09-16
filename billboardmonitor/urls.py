@@ -21,13 +21,14 @@ from rest_framework_jwt.views import refresh_jwt_token
 from rest_framework_jwt.views import verify_jwt_token
 from django.conf import settings
 from django.conf.urls.static import static
-from bmonitor.views import BillBoardPost, BillBoardBrandPost, CompetitorPost, ImagePost, BillBoardViewAll, BrandAgencyViewAll, BrandViewAll, MediaAgencyViewAll, BoardSupplierViewAll, ImageViewAll, ImageViewOne
+from bmonitor.views import BillBoardPost, BillBoardBrandPost, CompetitorPost, ImagePost, BillBoardViewAll, BrandAgencyViewAll, BrandViewAll, MediaAgencyViewAll, BoardSupplierViewAll, ImageViewAll, ImageViewOne, UserViewAll, MediaAgencyViewOne, ClientViewOne
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^auth-jwt/', obtain_jwt_token),
     url(r'^auth-jwt-refresh/', refresh_jwt_token),
     url(r'^auth-jwt-verify/', verify_jwt_token),
+    url(r'^user/', UserViewAll.as_view(), name='retrieve-user'),
 
     path(r'bill/board/create', BillBoardPost.as_view(), name='create_billboard'),
     path(r'bill/board/all', BillBoardViewAll.as_view(), name='retrieve_billboard'),
@@ -43,6 +44,10 @@ urlpatterns = [
     path(r'board/brand/all', BrandViewAll.as_view(), name='retrieve_brand'),
     path(r'media/agency/all', MediaAgencyViewAll.as_view(),
          name='retrieve_agencies'),
+    url(r'^media/agency/(?P<id>\d+)/$',
+        MediaAgencyViewOne.as_view(), name='retrieve_agency'),
     path(r'board/suppliers/all', BoardSupplierViewAll.as_view(),
-         name='retrieve_suppliers')
+         name='retrieve_suppliers'),
+    url(r'^media/client/(?P<id>\d+)/$',
+        ClientViewOne.as_view(), name='retrieve_client')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

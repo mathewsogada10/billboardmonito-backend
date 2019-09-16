@@ -113,15 +113,21 @@ class Competitor(models.Model):
 
 class Users(models.Model):
     #auth_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
-    #auth_user = models.ForeignKey(User, on_delete=models.CASCADE)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
+    auth_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    client = models.ForeignKey(
+        Client, blank=True, on_delete=models.SET_NULL, null=True)
     agency = models.ForeignKey(
-        MediaAgency, on_delete=models.CASCADE, null=True)
+        MediaAgency, blank=True, on_delete=models.SET_NULL, null=True)
     dateCreated = models.DateTimeField(default=datetime.now(), blank=True)
     lastUpdate = models.DateTimeField(default=datetime.now(), blank=True)
 
     def __str__(self):
-        return self.client.name
+        name=''
+        if self.client is not None:
+            name = self.client.name
+        else:
+            name = self.agency.name
+        return name
 
 
 class BoardSupplier(models.Model):
